@@ -11,8 +11,8 @@ HEIGHT = 600
 MISSLES_DEFAULT = 1
 BASIC_WIND_COUNTER = 60
 BONUS_SIZE = 50
-BASIC_BONUS_COUNTER = random.randint(200,300)
-NORMAL_SPEED = 10
+BASIC_BONUS_COUNTER = random.randint(200,300) #"перезарядка" бонуса
+NORMAL_SPEED = 10 #стандартная скорость персонажа
 BULLET_SPEED_X = -30
 ARROW_SPEED_X = 15
 MAX_WIND_SPEED = 5
@@ -21,7 +21,7 @@ NORMAL_REACTION_TIME=4  #тиков сохраняется действие
 DIFFICULTY=5   #дальность "замечаемых снарядов" в тиках
 SHOOTING_COOLDOWN=3
 
-#just global shit
+#just global stuff
 BULLETS_MAX = MISSLES_DEFAULT
 ARROWS_MAX = MISSLES_DEFAULT
 BONUS_EXISTS=False
@@ -52,7 +52,7 @@ root.title("WILDWEST")
 c = Canvas(root, width=WIDTH, height=HEIGHT, background="#8b734b")
 c.pack()
  
-# элементы игрового поля
+# персонажи
 cowboy_body=c.create_rectangle(
     WIDTH-40,HEIGHT/2-40,WIDTH,HEIGHT/2+40,fill='white',tag='cowboy')
 cowboy_hat=c.create_oval(
@@ -70,7 +70,7 @@ arrow_wind=c.create_line(
                             width=5,arrow=LAST,arrowshape='10 20 10',fill='blue')
 
  
-# функция движения обеих ракеток
+# функция движения персонажей
 def move_players():
 # двигаем ракетку с заданной скоростью
         c.move('cowboy', 0, COWBOY_SPEED)
@@ -87,7 +87,8 @@ def move_players():
             c.move('indeec', 0, -c.coords(indeec_body)[1])
         elif c.coords(indeec_body)[3] > HEIGHT:
             c.move('indeec', 0, HEIGHT - c.coords(indeec_body)[3])
-            
+ 
+# функция движения снарядов и их специальные условия
 def move_missles():
         global COWBOY_WIN
         global INDEEC_WIN
@@ -141,12 +142,13 @@ def move_missles():
         c.move('arrow',ARROW_SPEED_X+WIND_SPEED_X,ARROW_SPEED_Y+WIND_SPEED_Y)
 
 
-# Установим фокус на Canvas чтобы он реагировал на нажатия клавиш
+# фокус на Canvas чтобы он реагировал на нажатия клавиш
 c.focus_set()
 
 bullets=[]
 arrows=[]
-# Напишем функцию обработки нажатия клавиш
+
+# функция обработки нажатия клавиш
 def movement_handler(event):
     global COWBOY_SPEED,INDEEC_SPEED
     if event.keysym == "Up":
@@ -162,10 +164,9 @@ def movement_handler(event):
     if event.keysym == "0":
             spawn_arrow()    
                  
-# Привяжем к Canvas эту функцию
 c.bind("<KeyPress>", movement_handler)
 
-# Создадим функцию реагирования на отпускание клавиши
+# функция реагирования на отпускание клавиши
 def stop_pad(event):
     global COWBOY_SPEED,INDEEC_SPEED
     if event.keysym in ("Up", "Down"):
@@ -173,9 +174,9 @@ def stop_pad(event):
     if event.keysym in ("w", "s"):
         INDEEC_SPEED = 0
  
-# Привяжем к Canvas эту функцию
 c.bind("<KeyRelease>", stop_pad)
 
+# создание пули
 def spawn_bullet():
         global COOLDOWN_BULLET
         
@@ -188,7 +189,7 @@ def spawn_bullet():
                                                                     c.coords(cowboy_body)[2],c.coords(cowboy_body)[3]-30,
                                                                     fill='orange',tag='bullet'))
         
-        
+# создание стрелы        
 def spawn_arrow():
         global COOLDOWN_ARROW
         
@@ -201,9 +202,10 @@ def spawn_arrow():
                                     c.coords(indeec_body)[2],c.coords(indeec_body)[3]-40,
                                     width=5,arrow=LAST,arrowshape='10 20 10',fill='red',tag='arrow'))
 
+# функция выбора позиции для атаки
 def attacking():
         global INDEEC_SPEED
-        global REACTION_ATTACKING
+        global REACTION_ATTACKING #задержка в виде "времени реакции" после выбора направления уворота
 
         cowboy_center_y=c.coords(cowboy_body)[1]+40
         indeec_center_y=c.coords(indeec_body)[1]+40
@@ -224,6 +226,7 @@ def attacking():
                         INDEEC_SPEED=0
                         REACTION_ATTACKING=NORMAL_REACTION_TIME
 
+# функция уворотов
 def evading(DIRECTION):
         global WIND_SPEED_Y
         global INDEEC_SPEED
@@ -237,8 +240,9 @@ def evading(DIRECTION):
                         
 
 def bonus_hunting():
-        abvar
+        #not realised yet
 
+#функция выбора действия "ИИ"
 def check_ai():
         global DIFFICULTY
         global BULLET_SPEED_X
@@ -258,7 +262,7 @@ def check_ai():
                 REACTION_EVADING-=1
 
         if len(bullets)>0:        
-                for bullet in reversed(bullets):   #проверка на эвейд
+                for bullet in reversed(bullets):   #проверка на уворот
                         bullet_center_x=c.coords(bullet)[0]+20
                         bullet_center_y=c.coords(bullet)[3]-10
                         proximity = bullet_center_x//abs((BULLET_SPEED_X+WIND_SPEED_X))
@@ -280,7 +284,8 @@ def check_ai():
         flight_rounds=WIDTH//(ARROW_SPEED_X+WIND_SPEED_X) #проверка на выстрел
         if cowboy_center_y+20>indeec_center_y+WIND_SPEED_Y*flight_rounds>cowboy_center_y-20:
                 SHOOTING=True          
-        
+
+#исполнение функции ИИ
 def proceed_ai():
         global EVADING
         global SHOOTING
@@ -297,7 +302,7 @@ def proceed_ai():
                 attacking()
 
 
-
+#функция изменения ветра и отрисовки флюгера
 def check_wind():
     global WIND_COUNTER
     global BASIC_WIND_COUNTER
@@ -326,7 +331,7 @@ def check_wind():
                             WIDTH/2+WIND_SPEED_X*4,HEIGHT-20+WIND_SPEED_Y*4,
                             width=5,arrow=LAST,arrowshape='5 10 5',fill='blue')
 
-
+# реализация бонусов
 def check_bonuses():
         global BONUS_COUNTER
         global BASIC_BONUS_COUNTER
@@ -355,7 +360,7 @@ def check_bonuses():
                 BONUS_EXISTS=False
                 ARROWS_MAX+=1
                 INDEEC_UPGRADE=False
-
+# создание иконки бонуса
 def create_bonus():
         global BONUS_SIZE
         x_init=random.randint(100,WIDTH-100-BONUS_SIZE)
@@ -412,8 +417,8 @@ def main():
         check_wind()
         check_bonuses()
 
-        root.after(15, main)
-    else:
+        root.after(15, main)                   # вызов самой себя каждые 15 миллисекунд
+    else:                                      #окончание игры и отрисовка меню
         if COWBOY_WIN and not INDEEC_WIN:
                 
                 c.create_text(WIDTH/2, HEIGHT/2-50,
@@ -444,10 +449,9 @@ def main():
         c.tag_bind('play_again', '<Button-1>', game_restart)
 
 
-        # вызываем саму себя каждые 30 миллисекунд
-    
+            
  
-# запускаем движение
+# запуск движения
 main() 
-# запускаем работу окна
+# запуск работы окна
 root.mainloop()
