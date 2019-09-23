@@ -240,6 +240,7 @@ def evading(DIRECTION):
                         
 
 def bonus_hunting():
+        advr 
         #not realised yet
 
 #функция выбора действия "ИИ"
@@ -270,8 +271,10 @@ def check_ai():
                                 if indeec_center_y+60>bullet_center_y+WIND_SPEED_Y*proximity>indeec_center_y-60:
                                         EVADING=True
                                         REACTION_EVADING=NORMAL_REACTION_TIME
-                                        if indeec_center_y+10>=bullet_center_y+proximity*WIND_SPEED_Y>=indeec_center_y-10: #исправить ?
+                                        if bullet_center_y+proximity*WIND_SPEED_Y>indeec_center_y: #исправить ?
                                                 DIRECTION='up'
+                                        elif bullet_center_y+proximity*WIND_SPEED_Y=indeec_center_y:
+                                                DIRECTION=random.choice('up','down')
                                         else:
                                                 DIRECTION='down'
                                 else:
