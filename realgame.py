@@ -270,7 +270,7 @@ def check_ai():
                                 if indeec_center_y+60>bullet_center_y+WIND_SPEED_Y*proximity>indeec_center_y-60:
                                         EVADING=True
                                         REACTION_EVADING=NORMAL_REACTION_TIME
-                                        if bullet_center_y+proximity*WIND_SPEED_Y>=indeec_center_y: #исправить
+                                        if indeec_center_y+10>=bullet_center_y+proximity*WIND_SPEED_Y>=indeec_center_y-10: #исправить ?
                                                 DIRECTION='up'
                                         else:
                                                 DIRECTION='down'
