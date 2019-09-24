@@ -267,16 +267,19 @@ def check_ai():
                         bullet_center_x=c.coords(bullet)[0]+20
                         bullet_center_y=c.coords(bullet)[3]-10
                         proximity = bullet_center_x//abs((BULLET_SPEED_X+WIND_SPEED_X))
+                        mesto_popadania = bullet_center_y+WIND_SPEED_Y*proximity
                         if proximity<=DIFFICULTY:
-                                if indeec_center_y+60>bullet_center_y+WIND_SPEED_Y*proximity>indeec_center_y-60:
+                                if indeec_center_y+60>mesto_popadania>indeec_center_y-60:
                                         EVADING=True
                                         REACTION_EVADING=NORMAL_REACTION_TIME
-                                        if bullet_center_y+proximity*WIND_SPEED_Y>indeec_center_y: #исправить ?
+                                        if mesto_popadania>indeec_center_y and indeec_center_y>100: 
                                                 DIRECTION='up'
-                                        elif bullet_center_y+proximity*WIND_SPEED_Y=indeec_center_y:
+                                        elif mesto_popadania==indeec_center_y:
                                                 DIRECTION=random.choice('up','down')
-                                        else:
+                                        elif mesto_popadania<indeec_center_y and indeec_center_y<HEIGHT-100:
                                                 DIRECTION='down'
+                                        else:
+                                                DIRECTION=random.choice('up','down')
                                 else:
                                         EVADING=False
                         else:
