@@ -15,8 +15,8 @@ BASIC_BONUS_COUNTER = random.randint(200,300) #"перезарядка" бону
 NORMAL_SPEED = 10 #стандартная скорость персонажа
 BULLET_SPEED_X = -30
 ARROW_SPEED_X = 15
-MAX_WIND_SPEED = 5
-MAX_WIND_CHANGE = 2
+MAX_WIND_SPEED = 3
+MAX_WIND_CHANGE = 1
 NORMAL_REACTION_TIME=4  #тиков сохраняется действие
 DIFFICULTY=5   #дальность "замечаемых снарядов" в тиках
 SHOOTING_COOLDOWN=3
@@ -261,31 +261,40 @@ def check_ai():
 
         if REACTION_EVADING>0:
                 REACTION_EVADING-=1
-
-        if len(bullets)>0:        
-                for bullet in reversed(bullets):   #проверка на уворот
-                        bullet_center_x=c.coords(bullet)[0]+20
-                        bullet_center_y=c.coords(bullet)[3]-10
-                        proximity = bullet_center_x//abs((BULLET_SPEED_X+WIND_SPEED_X))
-                        mesto_popadania = bullet_center_y+WIND_SPEED_Y*proximity
-                        if proximity<=DIFFICULTY:
-                                if indeec_center_y+60>mesto_popadania>indeec_center_y-60:
-                                        EVADING=True
-                                        REACTION_EVADING=NORMAL_REACTION_TIME
-                                        if mesto_popadania>indeec_center_y and indeec_center_y>100: 
-                                                DIRECTION='up'
-                                        elif mesto_popadania==indeec_center_y:
-                                                DIRECTION=random.choice('up','down')
-                                        elif mesto_popadania<indeec_center_y and indeec_center_y<HEIGHT-100:
-                                                DIRECTION='down'
-                                        else:
-                                                DIRECTION=random.choice('up','down')
-                                else:
-                                        EVADING=False
-                        else:
-                                EVADING=False
         else:
-                EVADING=False
+            if len(bullets)>0:        
+                    for bullet in reversed(bullets):   #проверка на уворот
+                            bullet_center_x=c.coords(bullet)[0]+20
+                            bullet_center_y=c.coords(bullet)[3]-10
+                            proximity = bullet_center_x//abs((BULLET_SPEED_X+WIND_SPEED_X))
+                            mesto_popadania = bullet_center_y+WIND_SPEED_Y*proximity
+                            print(mesto_popadania,indeec_center_y)
+                            if proximity<=DIFFICULTY:
+                                    if indeec_center_y+60>mesto_popadania>indeec_center_y-60:
+                                            EVADING=True
+                                            REACTION_EVADING=NORMAL_REACTION_TIME
+                                            if mesto_popadania>indeec_center_y:
+                                                    if mesto_popadania>80: 
+                                                            DIRECTION='up'
+                                                    else:
+                                                            DIRECTION='down'
+                                                    print(DIRECTION)
+                                            elif mesto_popadania==indeec_center_y:
+                                                    DIRECTION=random.choice(['up','down'])
+                                                    print(DIRECTION)
+                                            elif mesto_popadania<indeec_center_y:
+                                                    if mesto_popadania<HEIGHT-80:
+                                                            DIRECTION='down'
+                                                    else:
+                                                            DIRECTION='up'
+                                                    print(DIRECTION)
+                                            
+                                    else:
+                                            EVADING=False
+                            else:
+                                    EVADING=False
+            else:
+                    EVADING=False
 
         flight_rounds=WIDTH//(ARROW_SPEED_X+WIND_SPEED_X) #проверка на выстрел
         if cowboy_center_y+20>indeec_center_y+WIND_SPEED_Y*flight_rounds>cowboy_center_y-20:
